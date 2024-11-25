@@ -6,7 +6,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/signup" element={<SignUpForm />} />
+        <Route path="/" element={<SignUpForm />} />
       </Routes>
     </Router>
   );
