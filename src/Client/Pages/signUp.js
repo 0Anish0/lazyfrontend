@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import Logo from "../../Assets/logo.png";
 
 const SignUpForm = () => {
     const [formData, setFormData] = useState({
@@ -35,7 +36,7 @@ const SignUpForm = () => {
             <div className="bg-white p-8 rounded-md shadow-lg w-full max-w-md">
                 <div className="text-center mb-6">
                     <img
-                        src="/logo.png"
+                        src={Logo}
                         alt="Logo"
                         className="h-12 mx-auto"
                     />
@@ -74,18 +75,6 @@ const SignUpForm = () => {
 
                     {/* Password and Number */}
                     <div className="flex space-x-4 mb-4">
-                        <div className="flex items-center w-1/2 px-4 py-2 border rounded-md focus-within:ring-2 focus-within:ring-green-400">
-                            <FontAwesomeIcon icon={faLock} className="text-gray-400 mr-3" />
-                            <input
-                                type="password"
-                                name="password"
-                                placeholder="Password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                className="w-full outline-none"
-                                required
-                            />
-                        </div>
                         <div className="w-1/2 flex items-center border rounded-md overflow-hidden">
                             {/* Country Code Dropdown */}
                             <div className="flex items-center border-r pl-3">
@@ -101,7 +90,6 @@ const SignUpForm = () => {
                                     <option value="+977">🇳🇵 +977</option>
                                 </select>
                             </div>
-
                             {/* Phone Number Input */}
                             <input
                                 type="tel"
@@ -113,12 +101,24 @@ const SignUpForm = () => {
                                 required
                             />
                         </div>
+                        <div className="flex items-center w-1/2 px-4 py-2 border rounded-md focus-within:ring-2 focus-within:ring-green-400">
+                            <FontAwesomeIcon icon={faLock} className="text-gray-400 mr-3" />
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                className="w-full outline-none"
+                                required
+                            />
+                        </div>
                     </div>
 
                     {/* Gender */}
                     <div className="mb-4">
                         <label className="block text-gray-600 mb-1">Gender</label>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-6 text-lg">
                             <label className="flex items-center space-x-1">
                                 <input
                                     type="radio"
@@ -158,17 +158,6 @@ const SignUpForm = () => {
                     {/* Location */}
                     <div className="flex space-x-4 mb-4">
                         <select
-                            name="locationCity"
-                            value={formData.locationCity}
-                            onChange={handleChange}
-                            className="w-1/2 px-4 py-2 border rounded-md focus:ring-2 focus:ring-green-400 outline-none"
-                            required
-                        >
-                            <option value="">City</option>
-                            <option value="City1">City1</option>
-                            <option value="City2">City2</option>
-                        </select>
-                        <select
                             name="locationState"
                             value={formData.locationState}
                             onChange={handleChange}
@@ -176,8 +165,19 @@ const SignUpForm = () => {
                             required
                         >
                             <option value="">State</option>
-                            <option value="State1">State1</option>
-                            <option value="State2">State2</option>
+                            <option value="State1">Uttar Pradesh</option>
+                            <option value="State2">Bihar</option>
+                        </select>
+                        <select
+                            name="locationCity"
+                            value={formData.locationCity}
+                            onChange={handleChange}
+                            className="w-1/2 px-4 py-2 border rounded-md focus:ring-2 focus:ring-green-400 outline-none"
+                            required
+                        >
+                            <option value="">City</option>
+                            <option value="City1">Meerut</option>
+                            <option value="City2">City2</option>
                         </select>
                     </div>
 
@@ -191,6 +191,8 @@ const SignUpForm = () => {
                         <input
                             type="file"
                             id="photo"
+                            accept="image/*"
+                            capture="environment" // Use 'user' for the front camera
                             onChange={handleFileUpload}
                             className="hidden"
                         />
