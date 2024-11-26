@@ -2,16 +2,17 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
 import Logo from "../../Assets/logo.png";
 
 const ForgetPwd = () => {
   const [formData, setFormData] = useState({
     number: "",
     photo: null,
+    password: "",
   });
 
   const handleChange = (e) => {
+    e.preventDefault();
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -58,10 +59,6 @@ const ForgetPwd = () => {
       setErrorOTP(true);
       setIsOtpValid(false); // Set OTP as invalid
     }
-  };
-
-  const handlePasswordChange = (e) => {
-    setNewPassword(e.target.value);
   };
 
   const handleSubmitPassword = (e) => {
