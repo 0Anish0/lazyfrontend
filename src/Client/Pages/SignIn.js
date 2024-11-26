@@ -32,6 +32,9 @@ const SignIn = () => {
   const handleSignUpClick = () => {
     navigate("/sign-up");
   };
+  const handleforgetPwd = () => {
+    navigate("/forget-password");
+  };
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-50">
@@ -128,10 +131,8 @@ const SignIn = () => {
                     Login
                   </button>
                 </div>
-                <p className="text-center pb-3 text-blue-600 ">
-                    <Link to={"/forget-password"}>
-                    Forget Password ?
-                    </Link>
+                <p className="text-center pb-3 text-blue-600 " onClick={handleforgetPwd}>
+                  Forget Password ?
                 </p>
               </form>
               <span className="border-b-2 w-full flex"></span>
