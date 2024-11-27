@@ -31,7 +31,7 @@ const ForgetPwd = () => {
   const [otp, setOtp] = useState(Array(5).fill(""));
   const [isOtpValid, setIsOtpValid] = useState(false);
   const [errorOTP, setErrorOTP] = useState(false);
-  const [newPassword, setNewPassword] = useState("");
+  const [newPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
   const handleOTP = (e, index) => {
