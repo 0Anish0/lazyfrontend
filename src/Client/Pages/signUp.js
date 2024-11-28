@@ -21,7 +21,7 @@ const SignUpForm = () => {
         live_image: null,
     });
 
-    console.log(formData,"formData")
+    console.log(formData, "formData")
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -34,51 +34,30 @@ const SignUpForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        const {
-            first_name,
-            last_name,
-            password,
-            mobile,
-            gender,
-            country,
-            city,
-            state,
-            live_image,
-        } = formData;
-
-        if (!live_image) {
-            console.error("Live image is required");
-            return;
-        }
-
-        const formDataToSend = new FormData();
-        formDataToSend.append("first_name", first_name);
-        formDataToSend.append("last_name", last_name);
-        formDataToSend.append("password", password);
-        formDataToSend.append("mobile", mobile);
-        formDataToSend.append("gender", gender);
-        formDataToSend.append("country", country);
-        formDataToSend.append("city", city);
-        formDataToSend.append("state", state);
-        formDataToSend.append("live_image", live_image);
-
+        const { first_name, last_name, password, mobile, gender, country, city, state, live_image } = formData;
         const response = await fetch(`${Host}/api/signup`, {
             method: "POST",
-            body: formDataToSend,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ first_name, last_name, password, mobile, gender, country, city, state, live_image })
         });
+        const json = await response.json()
+        console.log(json)
 
-        const json = await response.json();
-        console.log(json);
+        if (json.success) {
+            // Save the auth token and redirect
+            localStorage.setItem('token', json.authToken)
+            navigate("/")
+            // props.showAlert("Account created successfully", "success")
+            console.log("success")
 
-        if (json.token) {
-            localStorage.setItem("token", json.authToken);
-            navigate("/");
-            console.log("User created successfully");
-        } else {
-            console.error("Error creating account");
         }
-    };
+        else {
+            console.log("error")
+            // props.showAlert("Invalid credentials", "danger")
+        }
+    }
 
     return (
         <div className="flex justify-center items-center h-screen bg-gray-100">

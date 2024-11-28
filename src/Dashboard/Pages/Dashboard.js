@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import Header from "../src/Dashboard/Components/header";
+import React, { useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faTachometerAlt,
@@ -16,8 +15,32 @@ import {
     faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { faProductHunt } from "@fortawesome/free-brands-svg-icons";
+import Header from "../Components/header";
+import { useNavigate } from "react-router-dom";
+import AdminContext from "../../Context/AdminContext";
 
 const Dashboard = () => {
+    const context = useContext(AdminContext);
+  const { notes, getAllUsers} = context;
+
+    let history = useNavigate();
+    useEffect(() => {
+        if (localStorage.getItem('token')) {
+            getAllUsers()
+        }
+        else {
+            history("/log-in")
+        }
+        // eslint-disable-next-line
+    }, []);
+
+    console.log(notes,"data")
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        history("/log-in");
+    };
+
     const [expandedCategory, setExpandedCategory] = useState(null);
     const toggleCategory = (category) => {
         setExpandedCategory(expandedCategory === category ? null : category);
@@ -47,14 +70,20 @@ const Dashboard = () => {
                         },
                         { icon: faEnvelope, label: "Client Enquiry" },
                         { icon: faUserPlus, label: "Join Team" },
-                        { icon: faSignOutAlt, label: "Log Out" },
+                        { icon: faSignOutAlt, label: "Log Out", onClick: handleLogout },
                     ].map((item, index) => (
                         <li key={index} className="mb-2">
                             <div
                                 className={`py-3 px-2 border-2 text-gray-700 hover:bg-gray-200 rounded cursor-pointer flex items-center justify-between ${item.subcategories ? "border" : ""
                                     }`}
                                 onClick={() =>
-                                    item.subcategories ? toggleCategory(item.label) : null
+                                {
+                                    if (item.onClick) {
+                                        item.onClick(); // Call the specific onClick handler if it exists
+                                    } else if (item.subcategories) {
+                                        toggleCategory(item.label); // Toggle subcategories for items with subcategories
+                                    }
+                                }
                                 }
                             >
                                 <span className="flex items-center">
