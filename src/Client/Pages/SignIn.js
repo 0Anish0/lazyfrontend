@@ -10,29 +10,51 @@ import {
   faCog,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import Host from "../../Host/Host";
 
-const SignIn = () => {
+const SignIn = (props) => {
+  const [message, setMessage] = useState(false);
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    password: "",
-    number: "",
-  });
+  const [credentials, setCredentials] = useState({ mobile: "", password: "" });
+  let history = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const response = await fetch(`${Host}/api/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mobile: credentials.mobile,
+        password: credentials.password,
+      }),
+    });
+    const json = await response.json();
+    // console.log(json);
+    if (json.token) {
+      // Save the auth token and redirect
+      localStorage.setItem("token", json.authToken);
+      // props.showAlert("Logedin successfully", "success")
+      console.log("login successful");
+      history("/dashboard");
+    } else {
+      console.log("error");
+      setMessage(true)
+      // props.showAlert("Invalid Details", "danger")
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
+  const onChange = (e) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
   const handleSignUpClick = () => {
     navigate("/sign-up");
   };
-  const handleforgetPwd = () => {
+
+  const handleForgetPwd = () => {
     navigate("/forget-password");
   };
 
@@ -49,7 +71,6 @@ const SignIn = () => {
             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
               <FontAwesomeIcon icon={faSearch} className="text-gray-400" />
             </span>
-
             <input
               type="text"
               placeholder="Search..."
@@ -64,7 +85,10 @@ const SignIn = () => {
         <div className="flex justify-between w-full max-w-8xl gap-6">
           <div className="flex justify-center items-center mr-10 bg-white shadow rounded-2xl w-3/5">
             <video controls className="h-full w-full rounded-2xl">
-              <source src="https://res.cloudinary.com/dfv1qnzoz/video/upload/v1719039250/gh211amrhepwgubdirem.mp4" type="video/mp4" />
+              <source
+                src="https://res.cloudinary.com/dfv1qnzoz/video/upload/v1719039250/gh211amrhepwgubdirem.mp4"
+                type="video/mp4"
+              />
               Your browser does not support the video tag.
             </video>
           </div>
@@ -72,15 +96,16 @@ const SignIn = () => {
           <div className="bg-white p-8 rounded-md shadow-lg ml-10 w-2/5 flex flex-col justify-center items-center">
             <div className="m-5 sm:mx-auto sm:w-full sm:max-w-sm">
               <form className="space-y-6" onSubmit={handleSubmit}>
+                {message && <p>Please Enter Correct Information</p>}
                 <div className="flex items-center border rounded-md overflow-hidden">
                   {/* Country Code Dropdown */}
                   <div className="flex items-center border-r pl-3">
                     <select
                       name="countryCode"
-                      value={formData.countryCode || "+91"}
+                      value={credentials.countryCode || "+91"}
                       onChange={(e) =>
-                        setFormData({
-                          ...formData,
+                        setCredentials({
+                          ...credentials,
                           countryCode: e.target.value,
                         })
                       }
@@ -96,10 +121,10 @@ const SignIn = () => {
                   {/* Phone Number Input */}
                   <input
                     type="tel"
-                    name="number"
-                    placeholder="Number"
-                    value={formData.number}
-                    onChange={handleChange}
+                    name="mobile"
+                    placeholder="Mobile"
+                    value={credentials.mobile}
+                    onChange={onChange}
                     className="w-full px-3 py-2 outline-none"
                     required
                   />
@@ -115,8 +140,8 @@ const SignIn = () => {
                       type="password"
                       name="password"
                       placeholder="Password"
-                      value={formData.password}
-                      onChange={handleChange}
+                      value={credentials.password}
+                      onChange={onChange}
                       className="w-full outline-none"
                       required
                     />
@@ -131,8 +156,11 @@ const SignIn = () => {
                     Login
                   </button>
                 </div>
-                <p className="text-center pb-3 text-blue-600 " onClick={handleforgetPwd}>
-                  Forget Password ?
+                <p
+                  className="text-center pb-3 text-blue-600"
+                  onClick={handleForgetPwd}
+                >
+                  Forget Password?
                 </p>
               </form>
               <span className="border-b-2 w-full flex"></span>
@@ -148,6 +176,7 @@ const SignIn = () => {
             </div>
           </div>
         </div>
+
         <div className="flex items-center justify-center gap-4 mt-12 relative">
           <div className="text-center px-10">
             <div className="flex justify-center items-center bg-black text-white rounded-full w-12 h-12 mx-auto mb-2">
@@ -175,6 +204,7 @@ const SignIn = () => {
           </div>
           <span className="absolute left-0 bottom-0">🇮🇳 India</span>
         </div>
+
         <div className="flex items-center justify-end border-t-2 mt-5">
           <ul className="flex items-center justify-center gap-8 mt-3">
             <li>

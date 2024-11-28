@@ -4,18 +4,24 @@ import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import Logo from "../../Assets/logo.png";
+import { useNavigate } from "react-router-dom";
+import Host from "../../Host/Host";
 
 const SignUpForm = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
+        first_name: "",
+        last_name: "",
         password: "",
-        number: "",
+        mobile: "",
         gender: "",
-        locationCity: "",
-        locationState: "",
-        photo: null,
+        country: "+91",
+        city: "",
+        state: "",
+        live_image: null,
     });
+
+    console.log(formData,"formData")
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -23,12 +29,55 @@ const SignUpForm = () => {
     };
 
     const handleFileUpload = (e) => {
-        setFormData({ ...formData, photo: e.target.files[0] });
+        setFormData({ ...formData, live_image: e.target.files[0] });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData);
+
+        const {
+            first_name,
+            last_name,
+            password,
+            mobile,
+            gender,
+            country,
+            city,
+            state,
+            live_image,
+        } = formData;
+
+        if (!live_image) {
+            console.error("Live image is required");
+            return;
+        }
+
+        const formDataToSend = new FormData();
+        formDataToSend.append("first_name", first_name);
+        formDataToSend.append("last_name", last_name);
+        formDataToSend.append("password", password);
+        formDataToSend.append("mobile", mobile);
+        formDataToSend.append("gender", gender);
+        formDataToSend.append("country", country);
+        formDataToSend.append("city", city);
+        formDataToSend.append("state", state);
+        formDataToSend.append("live_image", live_image);
+
+        const response = await fetch(`${Host}/api/signup`, {
+            method: "POST",
+            body: formDataToSend,
+        });
+
+        const json = await response.json();
+        console.log(json);
+
+        if (json.token) {
+            localStorage.setItem("token", json.authToken);
+            navigate("/");
+            console.log("User created successfully");
+        } else {
+            console.error("Error creating account");
+        }
     };
 
     return (
@@ -50,9 +99,9 @@ const SignUpForm = () => {
                             <FontAwesomeIcon icon={faUser} className="text-gray-400 mr-3" />
                             <input
                                 type="text"
-                                name="firstName"
+                                name="first_name"
                                 placeholder="First Name"
-                                value={formData.firstName}
+                                value={formData.first_name}
                                 onChange={handleChange}
                                 className="w-full outline-none"
                                 required
@@ -63,9 +112,9 @@ const SignUpForm = () => {
                             <FontAwesomeIcon icon={faUser} className="text-gray-400 mr-3" />
                             <input
                                 type="text"
-                                name="lastName"
+                                name="last_name"
                                 placeholder="Last Name"
-                                value={formData.lastName}
+                                value={formData.last_name}
                                 onChange={handleChange}
                                 className="w-full outline-none"
                                 required
@@ -79,9 +128,9 @@ const SignUpForm = () => {
                             {/* Country Code Dropdown */}
                             <div className="flex items-center border-r pl-3">
                                 <select
-                                    name="countryCode"
-                                    value={formData.countryCode || "+91"}
-                                    onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
+                                    name="country"
+                                    value={formData.country || "+91"}
+                                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                                     className="text-gray-600 outline-none emoji appearance-none bg-transparent"
                                     required
                                 >
@@ -93,9 +142,9 @@ const SignUpForm = () => {
                             {/* Phone Number Input */}
                             <input
                                 type="tel"
-                                name="number"
+                                name="mobile"
                                 placeholder="Number"
-                                value={formData.number}
+                                value={formData.mobile}
                                 onChange={handleChange}
                                 className="w-full px-3 py-2 outline-none"
                                 required
@@ -123,8 +172,8 @@ const SignUpForm = () => {
                                 <input
                                     type="radio"
                                     name="gender"
-                                    value="Male"
-                                    checked={formData.gender === "Male"}
+                                    value="male"
+                                    checked={formData.gender === "male"}
                                     onChange={handleChange}
                                     className="text-green-700"
                                 />
@@ -134,8 +183,8 @@ const SignUpForm = () => {
                                 <input
                                     type="radio"
                                     name="gender"
-                                    value="Female"
-                                    checked={formData.gender === "Female"}
+                                    value="female"
+                                    checked={formData.gender === "female"}
                                     onChange={handleChange}
                                     className="text-green-700"
                                 />
@@ -145,8 +194,8 @@ const SignUpForm = () => {
                                 <input
                                     type="radio"
                                     name="gender"
-                                    value="Others"
-                                    checked={formData.gender === "Others"}
+                                    value="others"
+                                    checked={formData.gender === "others"}
                                     onChange={handleChange}
                                     className="text-green-700"
                                 />
@@ -158,8 +207,8 @@ const SignUpForm = () => {
                     {/* Location */}
                     <div className="flex space-x-4 mb-4">
                         <select
-                            name="locationState"
-                            value={formData.locationState}
+                            name="state"
+                            value={formData.state}
                             onChange={handleChange}
                             className="w-1/2 px-4 py-2 border rounded-md focus:ring-2 focus:ring-green-400 outline-none"
                             required
@@ -169,8 +218,8 @@ const SignUpForm = () => {
                             <option value="State2">Bihar</option>
                         </select>
                         <select
-                            name="locationCity"
-                            value={formData.locationCity}
+                            name="city"
+                            value={formData.city}
                             onChange={handleChange}
                             className="w-1/2 px-4 py-2 border rounded-md focus:ring-2 focus:ring-green-400 outline-none"
                             required
@@ -183,14 +232,14 @@ const SignUpForm = () => {
 
                     {/* Upload Photo */}
                     <div className="mb-6 text-center">
-                        <label htmlFor="photo" className="inline-block cursor-pointer">
+                        <label htmlFor="live_image" className="inline-block cursor-pointer">
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-700">
                                 <FontAwesomeIcon icon={faCamera} className="h-8 w-8" />
                             </div>
                         </label>
                         <input
                             type="file"
-                            id="photo"
+                            id="live_image"
                             accept="image/*"
                             capture="environment" // Use 'user' for the front camera
                             onChange={handleFileUpload}
