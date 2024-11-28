@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Host from "../../Host/Host";
 
-const SignIn = (props) => {
+const SignIn = () => {
   const [message, setMessage] = useState(false);
   const navigate = useNavigate();
 
@@ -38,7 +38,7 @@ const SignIn = (props) => {
       localStorage.setItem("token", json.authToken);
       // props.showAlert("Logedin successfully", "success")
       console.log("login successful");
-      history("/dashboard");
+      history("/");
     } else {
       console.log("error");
       setMessage(true)
