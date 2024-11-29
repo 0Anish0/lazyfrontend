@@ -11,10 +11,13 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import Host from "../../Host/Host";
+import SignUpForm from "./signUp";
+import ForgetPwd from "./ForgetPwd";
 
 const SignIn = () => {
   const [message, setMessage] = useState(false);
-  const navigate = useNavigate();
+  const [signUpModal, setSignUpModal] = useState(false);
+  const [forgotModal, setForgotModal] = useState(false);
 
   const [credentials, setCredentials] = useState({ mobile: "", password: "" });
   let history = useNavigate();
@@ -41,7 +44,7 @@ const SignIn = () => {
       history("/");
     } else {
       console.log("error");
-      setMessage(true)
+      setMessage(true);
       // props.showAlert("Invalid Details", "danger")
     }
   };
@@ -51,15 +54,20 @@ const SignIn = () => {
   };
 
   const handleSignUpClick = () => {
-    navigate("/sign-up");
+    setSignUpModal(true);
   };
 
   const handleForgetPwd = () => {
-    navigate("/forget-password");
+    setForgotModal(true);
+  };
+
+  const closeModal = () => {
+    setSignUpModal(false);
+    setForgotModal(false)
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-50">
+    <div className="flex h-[100%] items-center justify-center bg-gray-50 sm:h-screen">
       <div className="items-center justify-center bg-gray-50 w-full px-8 lg:px-12 lg:mx-12">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img className="mx-auto w-2/5" src={logo} alt="lzycrazy" />
@@ -82,8 +90,8 @@ const SignIn = () => {
           </div>
         </div>
 
-        <div className="flex justify-between w-full max-w-8xl gap-6">
-          <div className="flex justify-center items-center mr-10 bg-white shadow rounded-2xl w-3/5">
+        <div className="flex justify-between w-full max-w-8xl gap-6 flex-wrap">
+          <div className="flex justify-center items-center bg-white shadow rounded-2xl w-full md:w-[55%]">
             <video controls className="h-full w-full rounded-2xl">
               <source
                 src="https://res.cloudinary.com/dfv1qnzoz/video/upload/v1719039250/gh211amrhepwgubdirem.mp4"
@@ -93,7 +101,7 @@ const SignIn = () => {
             </video>
           </div>
 
-          <div className="bg-white p-8 rounded-md shadow-lg ml-10 w-2/5 flex flex-col justify-center items-center">
+          <div className="bg-white p-8 rounded-md shadow-lg flex flex-col justify-center items-center w-full md:w-[35%]">
             <div className="m-5 sm:mx-auto sm:w-full sm:max-w-sm">
               <form className="space-y-6" onSubmit={handleSubmit}>
                 {message && <p>Please Enter Correct Information</p>}
@@ -157,7 +165,7 @@ const SignIn = () => {
                   </button>
                 </div>
                 <p
-                  className="text-center pb-3 text-blue-600"
+                  className="text-center pb-3 text-blue-600 cursor-pointer"
                   onClick={handleForgetPwd}
                 >
                   Forget Password?
@@ -177,30 +185,30 @@ const SignIn = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-center gap-4 mt-12 relative">
+        <div className="flex items-center justify-center gap-4 mt-12 relative flex-wrap">
           <div className="text-center px-10">
-            <div className="flex justify-center items-center bg-black text-white rounded-full w-12 h-12 mx-auto mb-2">
+            <div className="flex justify-center items-center bg-black text-white rounded-full w-12 h-12 mx-auto mb-2 cursor-pointer">
               <FontAwesomeIcon icon={faHome} className="text-1xl" />
             </div>
-            <div>Home</div>
+            <div className="cursor-pointer">Advertise</div>
           </div>
           <div className="text-center px-10">
-            <div className="flex justify-center items-center bg-black text-white rounded-full w-12 h-12 mx-auto mb-2">
+            <div className="flex justify-center items-center bg-black text-white rounded-full w-12 h-12 mx-auto mb-2 cursor-pointer">
               <FontAwesomeIcon icon={faUser} className="text-1xl" />
             </div>
-            <div>User</div>
+            <div className="cursor-pointer">Investors</div>
           </div>
           <div className="text-center px-10">
-            <div className="flex justify-center items-center bg-black text-white rounded-full w-12 h-12 mx-auto mb-2">
+            <div className="flex justify-center items-center bg-black text-white rounded-full w-12 h-12 mx-auto mb-2 cursor-pointer">
               <FontAwesomeIcon icon={faCog} className="text-1xl" />
             </div>
-            <div>Settings</div>
+            <div className="cursor-pointer">Business</div>
           </div>
           <div className="text-center px-10">
-            <div className="flex justify-center items-center bg-black text-white rounded-full w-12 h-12 mx-auto mb-2">
+            <div className="flex justify-center items-center bg-black text-white rounded-full w-12 h-12 mx-auto mb-2 cursor-pointer">
               <FontAwesomeIcon icon={faInfoCircle} className="text-1xl" />
             </div>
-            <div>Info</div>
+            <div className="cursor-pointer">Hiring</div>
           </div>
           <span className="absolute left-0 bottom-0">🇮🇳 India</span>
         </div>
@@ -222,6 +230,37 @@ const SignIn = () => {
           </ul>
         </div>
       </div>
+      {/* Modal */}
+      {signUpModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+          <div className="relative">
+            <SignUpForm />
+            <div className="flex justify-end">
+              <button
+                onClick={closeModal}
+                className="absolute top-0 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+                X
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {forgotModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+          <div className="relative">
+            <ForgetPwd />
+            <div className="flex justify-end">
+              <button
+                onClick={closeModal}
+                className="absolute top-0 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+                X
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

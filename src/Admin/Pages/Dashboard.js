@@ -15,13 +15,13 @@ import {
     faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { faProductHunt } from "@fortawesome/free-brands-svg-icons";
-import Header from "../Components/header";
 import { useNavigate } from "react-router-dom";
 import AdminContext from "../../Context/AdminContext";
+import Header from "../Components/Header";
 
 const Dashboard = () => {
     const context = useContext(AdminContext);
-  const { notes, getAllUsers} = context;
+    const { notes, getAllUsers } = context;
 
     let history = useNavigate();
     useEffect(() => {
@@ -29,7 +29,7 @@ const Dashboard = () => {
             getAllUsers()
         }
         else {
-            history("/log-in")
+            history("/admin")
         }
         // eslint-disable-next-line
     }, []);
@@ -38,7 +38,10 @@ const Dashboard = () => {
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        history("/log-in");
+        history("/admin");
+    };
+    const handleUser = () => {
+        history("/admin/user-list");
     };
 
     const [expandedCategory, setExpandedCategory] = useState(null);
@@ -76,8 +79,7 @@ const Dashboard = () => {
                             <div
                                 className={`py-3 px-2 border-2 text-gray-700 hover:bg-gray-200 rounded cursor-pointer flex items-center justify-between ${item.subcategories ? "border" : ""
                                     }`}
-                                onClick={() =>
-                                {
+                                onClick={() => {
                                     if (item.onClick) {
                                         item.onClick(); // Call the specific onClick handler if it exists
                                     } else if (item.subcategories) {
@@ -136,7 +138,7 @@ const Dashboard = () => {
                 <div className="flex">
                     <div className="grid grid-cols-1 gap-4 w-1/4">
                         {[
-                            { title: "Total Users", value: 123 },
+                            { title: "Total Users", value: notes.length, onClick: handleUser },
                             { title: "ADs", value: 123 },
                             { title: "Business Profile", value: 123 },
                             { title: "Advertising List", value: 123 },
@@ -144,6 +146,11 @@ const Dashboard = () => {
                             <div
                                 key={index}
                                 className="bg-white p-6 shadow-md rounded-md text-center border"
+                                onClick={() => {
+                                    if (stat.onClick) {
+                                        stat.onClick(); 
+                                    } 
+                                }}
                             >
                                 <h3 className="text-xl font-semibold">{stat.title}</h3>
                                 <p className="text-blue-600 text-2xl font-bold mt-2">{stat.value}</p>

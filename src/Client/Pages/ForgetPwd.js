@@ -1,33 +1,125 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import Logo from "../../Assets/logo.png";
+import { useNavigate } from "react-router-dom";
+import Host from "../../Host/Host";
 
 const ForgetPwd = () => {
+  let history = useNavigate();
   const [formData, setFormData] = useState({
-    number: "",
+    mobile: "",
     photo: null,
+  });
+
+  const [newFPassword, setNewFPassword] = useState({
     password: "",
   });
+
+  const [message, setMessage] =useState(false)
 
   const handleChange = (e) => {
     e.preventDefault();
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    setNewFPassword({ ...formData, [name]: value });
   };
 
   const handleFileUpload = (e) => {
     setFormData({ ...formData, photo: e.target.files[0] });
+    setNewFPassword({ ...formData, photo: e.target.files[0] });
   };
 
-  const handleSubmit = (e) => {
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [retake, setRetake] = useState(false);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  const handleOpenCamera = () => {
+    setIsCameraOpen(true);
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      })
+      .catch((err) => {
+        console.error("Error accessing camera:", err);
+        alert("Unable to access camera.");
+      });
+  };
+
+  const handleCapture = () => {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    const context = canvas.getContext("2d");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Get Base64 image data
+    const imageData = canvas.toDataURL("image/png");
+    setCapturedImage(imageData);
+    setRetake(true);
+
+    // Convert Base64 to File
+    const base64ToFile = (base64Data, fileName) => {
+      const arr = base64Data.split(",");
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+
+      return new File([u8arr], fileName, { type: mime });
+    };
+
+    const imageFile = base64ToFile(imageData, "captured-image.png");
+
+    // Stop the camera
+    const stream = video.srcObject;
+    const tracks = stream.getTracks();
+    tracks.forEach((track) => track.stop());
+
+    setIsCameraOpen(false);
+    setFormData({ ...formData, live_image: imageFile });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    const response = await fetch(`${Host}/api/send-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mobile: formData.mobile,
+        // password: credentials.password,
+      }),
+    });
+    const json = await response.json();
+    console.log(json);
+    if (json.token) {
+      // Save the auth token and redirect
+      localStorage.setItem("token", json.token);
+      // props.showAlert("Logedin successfully", "success")
+      console.log("otp sent successful");
+      // history("/");
+      setMessage(true)
+    } else {
+      console.log("error");
+      setMessage(true);
+      // props.showAlert("Invalid Details", "danger")
+    }
   };
 
   //   OTP process
-  const defaultOtp = "12345";
+  const defaultOtp = "77777";
   const [otp, setOtp] = useState(Array(5).fill(""));
   const [isOtpValid, setIsOtpValid] = useState(false);
   const [errorOTP, setErrorOTP] = useState(false);
@@ -75,7 +167,7 @@ const ForgetPwd = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
+    <div className="flex justify-center items-center ">
       <div className="bg-white p-8 rounded-md shadow-lg w-full max-w-md">
         <div className="text-center mb-6">
           <img src={Logo} alt="Logo" className="h-12 mx-auto" />
@@ -88,10 +180,10 @@ const ForgetPwd = () => {
               {/* Country Code Dropdown */}
               <div className="flex items-center border-r pl-3">
                 <select
-                  name="countryCode"
-                  value={formData.countryCode || "+91"}
+                  name="country"
+                  value={formData.country || "+91"}
                   onChange={(e) =>
-                    setFormData({ ...formData, countryCode: e.target.value })
+                    setFormData({ ...formData, country: e.target.value })
                   }
                   className="text-gray-600 outline-none emoji appearance-none bg-transparent"
                   required
@@ -104,9 +196,9 @@ const ForgetPwd = () => {
               {/* Phone Number Input */}
               <input
                 type="tel"
-                name="number"
+                name="mobile"
                 placeholder="Number"
-                value={formData.number}
+                value={formData.mobile}
                 onChange={handleChange}
                 className="w-full px-3 py-2 outline-none"
                 required
@@ -116,21 +208,46 @@ const ForgetPwd = () => {
 
           {/* Upload Photo */}
           <div className="mb-6 text-center">
-            <label htmlFor="photo" className="inline-block cursor-pointer">
+            <label htmlFor="photo" className="inline-block cursor-pointer" onClick={handleOpenCamera}>
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-700">
                 <FontAwesomeIcon icon={faCamera} className="h-8 w-8" />
               </div>
             </label>
             <p className="mt-2">Upload Live Photo</p>
-            <input
+            {/* <input
               type="file"
               id="photo"
               accept="image/*"
               capture="environment" // Use 'user' for the front camera
               onChange={handleFileUpload}
               className="hidden"
-            />
+              /> */}
+              {retake && <p>retake</p>}
           </div>
+            {isCameraOpen && (
+              <div className="mb-4">
+                <video
+                  ref={videoRef}
+                  className="w-full h-64 bg-black rounded-md"
+                />
+                <canvas ref={canvasRef} className="hidden" />
+                <button
+                  onClick={handleCapture}
+                  className="w-full bg-green-700 text-white py-2 mt-2 rounded-md hover:bg-green-800"
+                >
+                  Capture Photo
+                </button>
+              </div>
+            )}
+            {capturedImage && (
+              <div className="mb-4">
+                <img
+                  src={capturedImage}
+                  alt="Captured"
+                  className="w-full h-64 rounded-md object-cover"
+                />
+              </div>
+            )}
 
           {/* Submit Button */}
           <button
@@ -140,6 +257,9 @@ const ForgetPwd = () => {
             Send OTP
           </button>
         </form>
+        {message && (
+          <p>OTP Sent Successfully</p>
+        )}
         <div className="flex justify-center items-center">
           <div className="mt-5 w-full">
             <p className="  mb-4">Enter OTP</p>
