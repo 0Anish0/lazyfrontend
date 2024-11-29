@@ -21,7 +21,7 @@ const SignUpForm = () => {
         live_image: null,
     });
 
-    console.log(formData, "formData")
+    console.log(formData,"data")
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -32,32 +32,52 @@ const SignUpForm = () => {
         setFormData({ ...formData, live_image: e.target.files[0] });
     };
 
+    const validateForm = () => {
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(formData.mobile)) {
+            alert("Invalid mobile number. Please enter a 10-digit number.");
+            return false;
+        }
+        if (formData.password.length < 8) {
+            alert("Password must be at least 8 characters long.");
+            return false;
+        }
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const { first_name, last_name, password, mobile, gender, country, city, state, live_image } = formData;
-        const response = await fetch(`${Host}/api/signup`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ first_name, last_name, password, mobile, gender, country, city, state, live_image })
-        });
-        const json = await response.json()
-        console.log(json)
+        if (!validateForm()) return;
 
-        if (json.success) {
-            // Save the auth token and redirect
-            localStorage.setItem('token', json.authToken)
-            navigate("/")
-            // props.showAlert("Account created successfully", "success")
-            console.log("success")
+        try {
+            const formDataObject = new FormData();
+            Object.keys(formData).forEach((key) => {
+                formDataObject.append(key, formData[key]);
+            });
 
+            const response = await fetch(`${Host}/api/signup`, {
+                method: "POST",
+                body: formDataObject,
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                alert(error.message || "Something went wrong.");
+                return;
+            }
+
+            const json = await response.json();
+            if (json.success) {
+                localStorage.setItem("token", json.authToken);
+                navigate("/");
+            } else {
+                alert(json.message || "Signup failed.");
+            }
+        } catch (error) {
+            alert("An unexpected error occurred. Please try again.");
+            console.error(error);
         }
-        else {
-            console.log("error")
-            // props.showAlert("Invalid credentials", "danger")
-        }
-    }
+    };
 
     return (
         <div className="flex justify-center items-center h-screen bg-gray-100">
