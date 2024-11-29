@@ -34,7 +34,7 @@ const Dashboard = () => {
         // eslint-disable-next-line
     }, []);
 
-    console.log(notes,"data")
+    // console.log(notes,"data")
 
     const handleLogout = () => {
         localStorage.removeItem("token");

@@ -35,7 +35,7 @@ const SignIn = () => {
     // console.log(json);
     if (json.token) {
       // Save the auth token and redirect
-      localStorage.setItem("token", json.authToken);
+      localStorage.setItem("token", json.token);
       // props.showAlert("Logedin successfully", "success")
       console.log("login successful");
       history("/");

@@ -6,11 +6,11 @@ const AdminState = (props) => {
     const adminData = []
 
     const [notes, setNotes] = useState(adminData)
+    console.log(notes,"data")
 
     // Get all Note
     const getAllUsers = async () => {
         // API Call
-
         const response = await fetch(`${Host}/api/admin/list-users`, {
             method: "GET",
             headers: {
