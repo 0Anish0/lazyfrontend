@@ -6,7 +6,7 @@ import Logo from "../../Assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import Host from "../../Host/Host";
 
-const ForgetPwd = () => {
+const ForgetPwd = ({closeModal}) => {
   let history = useNavigate();
   const [formData, setFormData] = useState({
     mobile: "",
@@ -111,9 +111,11 @@ const ForgetPwd = () => {
       console.log("otp sent successful");
       // history("/");
       setMessage(true)
+      alert("OTP SENT");
     } else {
       console.log("error");
       setMessage(true);
+      alert("OTP SENT");
       // props.showAlert("Invalid Details", "danger")
     }
   };
@@ -163,6 +165,7 @@ const ForgetPwd = () => {
     } else {
       setPasswordError("");
       alert("Password changed successfully!");
+      closeModal(false)
     }
   };
 
