@@ -249,7 +249,7 @@ const SignIn = () => {
       {forgotModal && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
           <div className="relative">
-            <ForgetPwd />
+            <ForgetPwd closeModal={closeModal}/>
             <div className="flex justify-end">
               <button
                 onClick={closeModal}
