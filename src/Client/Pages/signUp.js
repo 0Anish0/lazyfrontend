@@ -120,8 +120,8 @@ const SignUpForm = () => {
       }
 
       const json = await response.json();
-      if (json.success) {
-        localStorage.setItem("token", json.authToken);
+      if (json.token) {
+        localStorage.setItem("token", json.token);
         navigate("/");
       } else {
         alert(json.message || "Signup failed.");

@@ -9,6 +9,7 @@ import Home from "./Client/Pages/Home";
 import HomeLayout from "./Client/Components/HomeLayout";
 import MyAds from "./Client/Pages/MyAds";
 import Response from "./Client/Pages/Response";
+import ViewUser from "./Admin/Pages/ViewUser";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/admin" element={<AdminSignIn />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/user-list" element={<UserTable />} />
+          <Route path="/admin/user-list/:pathName" element={<ViewUser />} />
           {/* client */}
           <Route path="/" element={<HomeLayout />}>
             <Route index element={<Home />} />  {/* Default page */}
