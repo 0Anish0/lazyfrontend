@@ -40,17 +40,21 @@ const AdminState = (props) => {
     }
 
     // Get User by Id
-    const getUserById = async (id) => {
+    const getUserById = async (user_id) => {
         // API Call
-        const response = await fetch(`${Host}/api/admin/user/${id}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "auth-token": localStorage.getItem('token')
-            },
-        });
-        const json = await response.json()
-        setNotes(json)
+        try {
+            const response = await fetch(`${Host}/api/admin/user/${user_id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "auth-token": localStorage.getItem('token')
+                },
+            });
+            const json = await response.json()
+            setNotes([json])
+        } catch (error) {
+            console.log("error")
+        }
     }
 
     return (
