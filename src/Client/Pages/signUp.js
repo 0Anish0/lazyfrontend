@@ -134,7 +134,7 @@ const SignUpForm = () => {
 
   return (
     <div className="flex justify-center items-center ">
-      <div className="bg-white p-8 rounded-md shadow-lg w-full max-w-md">
+      <div className="bg-white p-8 rounded-md shadow-lg w-[35rem]">
         <div className="text-center mb-6">
           <img src={Logo} alt="Logo" className="h-12 mx-auto" />
           <h2 className="text-lg font-bold mt-2">Create New Account</h2>
